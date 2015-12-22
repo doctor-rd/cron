@@ -1,0 +1,5 @@
+# This file is parsed by crond.py on startup.
+
+# m h dom mon dow command
+* * * * * echo every minute
+0,15,30,45 * * * * echo every 15 minutes

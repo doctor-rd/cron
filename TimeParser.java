@@ -16,6 +16,8 @@ public class TimeParser {
 	}
 
 	public TimeRange parseRange( String in ) throws Exception {
+		if( in.equals( "*" ) )
+			return boundary;
 		String[] s = in.split( "-", 2 );
 		if( s.length > 1 )
 			return new TimeRange( parseValue( s[0] ), parseValue( s[1] ) );
