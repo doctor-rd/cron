@@ -3,32 +3,21 @@
 import java.util.Calendar as Calendar
 import subprocess, getopt, sys, time
 import TimeParser
-import TimeRange
+import Boundaries
+import TabEntry
 
-class Cronjob:
+class Cronjob( TabEntry ):
 	def __init__( self, desc ):
 		s = desc.split( None, 5 )
-		self.mm = TimeParser( TimeRange( 0, 59 ) ).parse( s[0] )
-		self.hh = TimeParser( TimeRange( 0, 23 ) ).parse( s[1] )
-		self.dom = TimeParser( TimeRange( 1, 31 ) ).parse( s[2] )
-		self.mon = TimeParser( TimeRange( 1, 12 ) ).parse( s[3] )
-		self.dow = TimeParser( TimeRange( 1, 7 ) ).parse( s[4] )
+		self.minutes = TimeParser( Boundaries.MINUTES ).parse( s[0] )
+		self.hours = TimeParser( Boundaries.HOURS ).parse( s[1] )
+		self.dom = TimeParser( Boundaries.DOM ).parse( s[2] )
+		self.mon = TimeParser( Boundaries.MON ).parse( s[3] )
+		self.dow = TimeParser( Boundaries.DOW ).parse( s[4] )
 		self.cmd = s[5]
 
 	def dump( self ):
-		print "%s\t%s\t%s\t%s\t%s\t\t%s" % ( self.mm, self.hh, self.dom, self.mon, self.dow, self.cmd )
-
-	def check( self, cal ):
-		res = True
-		res &= self.mm.contains( cal.get( cal.MINUTE ) )
-		res &= self.hh.contains( cal.get( cal.HOUR_OF_DAY ) )
-		res &= self.dom.contains( cal.get( cal.DAY_OF_MONTH ) )
-		res &= self.mon.contains( cal.get( cal.MONTH ) + 1 )
-		g = cal.get( cal.DAY_OF_WEEK ) - 1;
-		if g == 0:
-			g = 7
-		res &= self.dow.contains( g )
-		return res
+		print "%s\t%s\t%s\t%s\t%s\t\t%s" % ( self.minutes, self.hours, self.dom, self.mon, self.dow, self.cmd )
 
 opts, args = getopt.getopt( sys.argv[1:], "hlf:" )
 
@@ -48,13 +37,13 @@ for o, a in opts:
 		quit()
 
 tab = []
-f = open( filename )
-for line in f:
-	s = line.strip()
-	if len( s ) > 0:
-		if s[0] != "#":
-			tab.append( Cronjob( s ) )
-f.close()
+
+with open( filename ) as f:
+	for line in f:
+		s = line.strip()
+		if len( s ) > 0:
+			if s[0] != "#":
+				tab.append( Cronjob( s ) )
 
 if list:
 	for i in tab:
@@ -67,5 +56,5 @@ while True:
 	for i in tab:
 		if i.check( cal ):
 			subprocess.call( [ "/bin/sh", "-c", i.cmd ] )
-	wait = 60 - Calendar.getInstance().get( cal.SECOND )
+	wait = 60 - Calendar.getInstance().get( Calendar.SECOND )
 	time.sleep( wait )
