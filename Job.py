@@ -28,6 +28,8 @@ class Job:
 		print headprefix + "cmd:  \t" + self.cmd
 
 	def setState( self, data ):
+		self.last = None
+		self.next = None
 		if data.has( "last" ):
 			self.last = Date( data.getInt( "last" ) * 1000 )
 		if data.has( "next" ):
@@ -40,3 +42,32 @@ class Job:
 		if self.next != None:
 			res.put( "next", self.next.getTime() / 1000 )
 		return res
+
+	def pending( self ):
+		if self.next == None:
+			return False
+		else:
+			return not Date().before( self.next )
+
+	def start( self ):
+		self.next = Date()
+
+	def stop( self ):
+		self.next = None
+
+	def resume( self ):
+		if self.last == None:
+			return
+		next = None
+		for i in self.scheds:
+			tmp = i.next( self.last, self.tz )
+			if tmp != None:
+				if next == None:
+					next = tmp
+				elif tmp.before( next ):
+					next = tmp
+		self.next = next
+
+	def done( self ):
+		self.last = Date()
+		self.resume()
