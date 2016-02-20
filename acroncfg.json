@@ -1,0 +1,16 @@
+{
+"statefile":"state.json",
+"lockfile":"lock",
+"jobs":[
+{
+"id":"hourly",
+"cmd":"echo hourly job",
+"scheds":[ { "wait":60 } ]
+},
+{
+"id":"monday",
+"cmd":"echo monday morning job",
+"scheds":[ { "dow":"1", "mid":"8:00" } ]
+}
+]
+}
