@@ -31,7 +31,7 @@ stoplist = []
 for o, a in opts:
 	if o == '-l':
 		lst = True
-	if o == '-r':
+	elif o == '-r':
 		run = True
 	elif o == '-f':
 		configfn = a
@@ -44,7 +44,7 @@ for o, a in opts:
 		print "\t-h\n\t\tThis"
 		print "\t-r\n\t\tRun all pending jobs."
 		print "\t-l\n\t\tDump all jobs."
-		print "\t-f FILENAME\n\t\tDefault: FILENAME=crontab"
+		print "\t-f FILENAME\n\t\tDefault: FILENAME=acroncfg.json"
 		print "\t-s ID\n\t\tStart a job."
 		print "\t-k ID\n\t\tStop a job."
 		quit()
